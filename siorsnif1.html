@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס סיור סניף | צ'ק ליסט סמנכ"לים</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #fafbfc;
+            --bg-card: #ffffff;
+            --bg-section: #f8f9fa;
+            --accent-primary: #0066ff;
+            --accent-secondary: #00c853;
+            --accent-warning: #ff9800;
+            --accent-danger: #f44336;
+            --text-primary: #1a1a2e;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-focus: #0066ff;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .header-input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .header-input label {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-input input, .header-input select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .header-input input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .header-input input:focus, .header-input select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab:hover {
+            border-color: var(--accent-primary);
+            background: #f0f7ff;
+        }
+
+        .nav-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .nav-tab .badge {
+            background: rgba(0,0,0,0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .nav-tab.active .badge {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .nav-tab.has-content {
+            border-color: var(--accent-secondary);
+        }
+
+        .nav-tab.has-content::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-secondary);
+            border-radius: 50%;
+        }
+
+        /* Section */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .question-card.has-content {
+            border-right: 4px solid var(--accent-secondary);
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .question-title .icon {
+            font-size: 1.1rem;
+        }
+
+        .guiding-questions {
+            background: var(--bg-section);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .guiding-questions strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .guiding-questions ul {
+            margin: 0;
+            padding-right: 1.2rem;
+        }
+
+        .guiding-questions li {
+            margin-bottom: 0.2rem;
+        }
+
+        /* Form Elements */
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Media Upload */
+        .media-upload {
+            margin-top: 0.75rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent-primary);
+            background: #f0f7ff;
+        }
+
+        .upload-zone input {
+            display: none;
+        }
+
+        .upload-zone .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .upload-zone p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .media-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .media-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Action Items */
+        .action-items-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .action-items-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0052cc;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-section);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-success {
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #00a344;
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-word {
+            background: #2b579a;
+            color: white;
+        }
+
+        .btn-word:hover {
+            background: #1e3f6f;
+        }
+
+        .btn-excel {
+            background: #217346;
+            color: white;
+        }
+
+        .btn-excel:hover {
+            background: #185c37;
+        }
+
+        .action-item {
+            background: var(--bg-section);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .action-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-item-number {
+            background: var(--accent-primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .action-item-remove {
+            background: none;
+            border: none;
+            color: var(--accent-danger);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .action-item-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .action-item-fields .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .field-group input, .field-group select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        .field-group input:focus, .field-group select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .priority-select {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 0.4rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .priority-option:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .priority-option.selected.high {
+            background: #fee2e2;
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        .priority-option.selected.medium {
+            background: #fef3c7;
+            border-color: var(--accent-warning);
+            color: #b45309;
+        }
+
+        .priority-option.selected.low {
+            background: #dcfce7;
+            border-color: var(--accent-secondary);
+            color: #166534;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--bg-section);
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Export Buttons */
+        .export-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Empty State */
+        .empty-actions {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-actions .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-box {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .header-meta {
+                flex-direction: column;
+            }
+
+            .action-item-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            .export-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header { position: relative; }
+            .nav-tabs, .upload-zone, .btn, .action-item-remove { display: none; }
+            .section { display: block !important; page-break-inside: avoid; }
+            .question-card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <div id="loadingText">מייצא...</div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>📋 טופס סיור סניף</h1>
+            <p style="opacity: 0.8; font-size: 0.85rem;">צ'ק ליסט לסמנכ"לים - תיעוד ממצאים והמלצות</p>
+            
+            <div class="header-meta">
+                <div class="header-input">
+                    <label>שם הסניף</label>
+                    <input type="text" id="branchName" placeholder="לדוגמה: שרון בינעירוני">
+                </div>
+                <div class="header-input">
+                    <label>תאריך סיור</label>
+                    <input type="date" id="visitDate">
+                </div>
+                <div class="header-input">
+                    <label>שם הסייר</label>
+                    <input type="text" id="visitorName" placeholder="שם מלא">
+                </div>
+                <div class="header-input">
+                    <label>מנהל הסניף</label>
+                    <input type="text" id="branchManager" placeholder="שם מנהל הסניף">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <div class="nav-tab active" data-section="manager">👔 מנהל סניף</div>
+            <div class="nav-tab" data-section="dispatchers">👷 סדרנים/שבץ</div>
+            <div class="nav-tab" data-section="drivers">🚌 נהגים</div>
+            <div class="nav-tab" data-section="parking">🅿️ חניון</div>
+            <div class="nav-tab" data-section="taxis">🚐 מוניות</div>
+            <div class="nav-tab" data-section="tech">💻 טכנולוגיה</div>
+            <div class="nav-tab" data-section="garage">🔧 מוסכים</div>
+            <div class="nav-tab" data-section="planning">📊 תכנון</div>
+            <div class="nav-tab" data-section="summary">📝 סיכום</div>
+        </nav>
+
+        <!-- Section: מנהל סניף -->
+        <div class="section active" id="section-manager">
+            <div class="section-header">
+                <h2>👔 שיחה עם מנהל הסניף</h2>
+                <p>הבנת התמונה הכוללת, אתגרים עיקריים ונקודות לטיפול</p>
+            </div>
+
+            <div class="question-card" data-field="manager_challenges">
+                <div class="question-title">
+                    <span class="icon">🎯</span>
+                    <span>אתגרים ובעיות עיקריות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מהם שלושת האתגרים הגדולים ביותר כרגע?</li>
+                        <li>האם יש בעיות שחוזרות על עצמן ולא נפתרות?</li>
+                        <li>מה מונע ממך לתפקד בצורה מיטבית?</li>
+                        <li>האם קיבלת תמיכה מספקת מהמטה?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד את האתגרים והבעיות שעלו בשיחה..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="manager_hr">
+                <div class="question-title">
+                    <span class="icon">👥</span>
+                    <span>מצב כוח אדם</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מה מצב הגיוס? האם יש מחסור בנהגים?</li>
+                        <li>מהי רמת שביעות הרצון של העובדים?</li>
+                        <li>האם יש תחלופה גבוהה? מה הסיבות?</li>
+                        <li>האם צוות ההנהלה מלא ומיומן?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים בנושא כוח אדם..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="manager_kpi">
+                <div class="question-title">
+                    <span class="icon">📈</span>
+                    <span>ביצועים ויעדים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם הסניף עומד ביעדים? אילו יעדים מאתגרים?</li>
+                        <li>מה מצב אי-הביצוע ואי-הדיוק?</li>
+                        <li>האם יש קווים בעייתיים במיוחד?</li>
+                        <li>מה נעשה לשיפור הביצועים?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד מידע על ביצועים ויעדים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: סדרנים/שבץ -->
+        <div class="section" id="section-dispatchers">
+            <div class="section-header">
+                <h2>👷 שיחה עם סדרנים ושבץ</h2>
+                <p>הבנת האתגרים התפעוליים היומיומיים</p>
+            </div>
+
+            <div class="question-card" data-field="dispatch_daily">
+                <div class="question-title">
+                    <span class="icon">📅</span>
+                    <span>אתגרים יומיומיים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מה הדבר הכי מתסכל בעבודה היומיומית?</li>
+                        <li>האם יש בעיות חוזרות בשיבוץ?</li>
+                        <li>איך מתמודדים עם היעדרויות פתאומיות?</li>
+                        <li>האם המערכות תומכות בעבודה או מכבידות?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד אתגרים יומיומיים של הסדרנים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="dispatch_communication">
+                <div class="question-title">
+                    <span class="icon">📞</span>
+                    <span>תקשורת וממשקים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>איך התקשורת עם חדר הבקרה?</li>
+                        <li>האם מקבלים מידע בזמן אמת?</li>
+                        <li>איך מתואמים שינויים ברגע האחרון?</li>
+                        <li>האם יש גורמים שקשה לתקשר איתם?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים בנושא תקשורת..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="dispatch_tools">
+                <div class="question-title">
+                    <span class="icon">🛠️</span>
+                    <span>כלים ומשאבים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם יש מספיק כלים לעבודה יעילה?</li>
+                        <li>מה חסר כדי לעבוד טוב יותר?</li>
+                        <li>האם ההכשרה שקיבלתם מספקת?</li>
+                        <li>האם יש נהלים ברורים לכל מצב?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד צרכים בכלים ומשאבים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: נהגים -->
+        <div class="section" id="section-drivers">
+            <div class="section-header">
+                <h2>🚌 שיחה עם נהגים</h2>
+                <p>הקשבה לנהגים בשטח - הלב של השירות</p>
+            </div>
+
+            <div class="question-card" data-field="drivers_satisfaction">
+                <div class="question-title">
+                    <span class="icon">😊</span>
+                    <span>שביעות רצון ותנאים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>איך אתה מרגיש בסניף? מרוצה?</li>
+                        <li>איך היחס של ההנהלה אליכם?</li>
+                        <li>האם התנאים הולמים (חדר אוכל, שירותים)?</li>
+                        <li>האם מקשיבים לכם כשיש בעיות?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד תחושות ושביעות רצון של נהגים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="drivers_routes">
+                <div class="question-title">
+                    <span class="icon">🛣️</span>
+                    <span>קווים וסידורי עבודה</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם הזמנים בסידור ריאליים?</li>
+                        <li>האם יש קווים בעייתיים במיוחד?</li>
+                        <li>מה דעתך על ההפסקות והמנוחות?</li>
+                        <li>האם יש בעיות בתחנות או במסלולים?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד משוב על קווים וסידורים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="drivers_vehicles">
+                <div class="question-title">
+                    <span class="icon">🚍</span>
+                    <span>רכבים וציוד</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מה מצב האוטובוסים? תחזוקה?</li>
+                        <li>האם יש בעיות חוזרות ברכבים?</li>
+                        <li>האם המיזוג/חימום עובד?</li>
+                        <li>האם מגיבים מהר לתקלות?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על מצב הרכבים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="drivers_compensation">
+                <div class="question-title">
+                    <span class="icon">💰</span>
+                    <span>שכר והטבות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם יש בעיות בתלושי השכר?</li>
+                        <li>מה המצב עם החזרי נסיעות/מוניות?</li>
+                        <li>האם התעריפים הוגנים?</li>
+                        <li>האם יש עיכובים בתשלומים?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד נושאי שכר והטבות שעלו..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: חניון -->
+        <div class="section" id="section-parking">
+            <div class="section-header">
+                <h2>🅿️ סיור בחניון</h2>
+                <p>בחינת מצב תחזוקה, בטיחות וניקיון</p>
+            </div>
+
+            <div class="question-card" data-field="parking_safety">
+                <div class="question-title">
+                    <span class="icon">⚠️</span>
+                    <span>בטיחות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>נקודות לבדיקה:</strong>
+                    <ul>
+                        <li>האם יש סימון ברור של מעברים ונתיבים?</li>
+                        <li>מצב התאורה - האם מספיקה?</li>
+                        <li>האם יש מפגעים בטיחותיים (בורות, מכשולים)?</li>
+                        <li>האם ציוד הבטיחות תקין (מטפים, שילוט)?</li>
+                        <li>האם יש גידור תקין?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאי בטיחות בחניון..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים - חשוב לתעד ממצאים!</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="parking_maintenance">
+                <div class="question-title">
+                    <span class="icon">🔧</span>
+                    <span>תחזוקה כללית</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>נקודות לבדיקה:</strong>
+                    <ul>
+                        <li>מצב הריצוף והאספלט</li>
+                        <li>ניקוז - האם יש הצפות?</li>
+                        <li>מצב הגדרות והשערים</li>
+                        <li>תחזוקת מבנים ומחסנים</li>
+                        <li>מצב תחנות הדלק (אם קיימות)</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד מצב תחזוקה כללי..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="parking_cleanliness">
+                <div class="question-title">
+                    <span class="icon">🧹</span>
+                    <span>ניקיון וסדר</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>נקודות לבדיקה:</strong>
+                    <ul>
+                        <li>ניקיון כללי של החניון</li>
+                        <li>מצב פחי האשפה</li>
+                        <li>סדר בחניית הרכבים</li>
+                        <li>ניקיון חדרי הנהגים והשירותים</li>
+                        <li>האם יש פסולת או ציוד מיותר?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד מצב ניקיון וסדר..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="parking_fuel">
+                <div class="question-title">
+                    <span class="icon">⛽</span>
+                    <span>דלק ואנרגיה</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>נקודות לבדיקה:</strong>
+                    <ul>
+                        <li>האם יש חשד לגניבת/שאיבת דלק?</li>
+                        <li>מצב תחנת התדלוק</li>
+                        <li>האם יש בקרה על צריכת הדלק?</li>
+                        <li>מצב עמדות טעינה (אם קיימות)</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים בנושא דלק ואנרגיה..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: מוניות -->
+        <div class="section" id="section-taxis">
+            <div class="section-header">
+                <h2>🚐 מוניות והסעות נהגים</h2>
+                <p>מערך ההסעות לנהגים - יעילות ושביעות רצון</p>
+            </div>
+
+            <div class="question-card" data-field="taxis_service">
+                <div class="question-title">
+                    <span class="icon">🚕</span>
+                    <span>איכות השירות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>איך היחס של רכזי המוניות לנהגים?</li>
+                        <li>האם יש תלונות על השירות?</li>
+                        <li>האם המוניות מגיעות בזמן?</li>
+                        <li>האם יש מספיק מוניות בשעות השיא?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על שירות המוניות..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="taxis_local">
+                <div class="question-title">
+                    <span class="icon">🏠</span>
+                    <span>נהגים מקומיים והחזרי נסיעות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מה המצב עם החזרי נסיעות לנהגים מקומיים?</li>
+                        <li>האם התעריפים לק"מ הוגנים?</li>
+                        <li>האם יש נהגים שמעדיפים לא להשתמש במוניות?</li>
+                        <li>האם זה משפיע על הגיוס?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד נושאי נהגים מקומיים והחזרים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="taxis_fairness">
+                <div class="question-title">
+                    <span class="icon">⚖️</span>
+                    <span>הוגנות ואחידות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם המתווה אחיד לכל הנהגים?</li>
+                        <li>האם יש הבדלים לא מוצדקים?</li>
+                        <li>האם יש תלונות על אפליה?</li>
+                        <li>מה צריך לשנות כדי שיהיה הוגן?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד נושאי הוגנות..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: טכנולוגיה -->
+        <div class="section" id="section-tech">
+            <div class="section-header">
+                <h2>💻 מערכות וטכנולוגיה</h2>
+                <p>בחינת המערכות הדיגיטליות וחדר הבקרה</p>
+            </div>
+
+            <div class="question-card" data-field="tech_control_room">
+                <div class="question-title">
+                    <span class="icon">🖥️</span>
+                    <span>חדר בקרה</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם חדר הבקרה פעיל בכל שעות ההפעלה?</li>
+                        <li>מה איכות האנשים בחדר הבקרה?</li>
+                        <li>האם יש הכשרה מספקת?</li>
+                        <li>האם יש נציגים ייעודיים לסניף?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על חדר הבקרה..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="tech_systems">
+                <div class="question-title">
+                    <span class="icon">📱</span>
+                    <span>מערכות (אופנייז, מנהלתיות)</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם הגישה למערכות תקינה?</li>
+                        <li>האם יש בעיות בהרשאות?</li>
+                        <li>האם יש התראות מיותרות/חסרות?</li>
+                        <li>האם המערכות עובדות כמצופה?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על מערכות..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="tech_communication">
+                <div class="question-title">
+                    <span class="icon">📡</span>
+                    <span>תקשורת ותשתיות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>מצב האינטרנט והרשת</li>
+                        <li>האם המחשבים תקינים?</li>
+                        <li>מצב מערכות הכריזה והקשר</li>
+                        <li>האם יש ציוד חסר או לא תקין?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד מצב תקשורת ותשתיות..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: מוסכים -->
+        <div class="section" id="section-garage">
+            <div class="section-header">
+                <h2>🔧 מוסכים ותחזוקה</h2>
+                <p>בחינת הממשק עם המוסכים ותהליכי תחזוקה</p>
+            </div>
+
+            <div class="question-card" data-field="garage_service">
+                <div class="question-title">
+                    <span class="icon">🛠️</span>
+                    <span>שירות המוסך</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>איך השירות מהמוסכים?</li>
+                        <li>האם זמני הטיפול סבירים?</li>
+                        <li>האם יש בעיות חוזרות עם מוסך מסוים?</li>
+                        <li>האם יש קנסות/דוחות בגלל חניה ליד המוסך?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על שירות המוסכים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="garage_process">
+                <div class="question-title">
+                    <span class="icon">📋</span>
+                    <span>תהליכים ונהלים</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>איך מתואם שליחת רכב למוסך?</li>
+                        <li>האם יש בעיות בתיאום שעות?</li>
+                        <li>איך מטפלים בתקלות דחופות?</li>
+                        <li>האם יש רכבים שנתקעים זמן רב במוסך?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד בעיות בתהליכים..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: תכנון -->
+        <div class="section" id="section-planning">
+            <div class="section-header">
+                <h2>📊 תכנון ושיבוץ</h2>
+                <p>בחינת סוגיות תכנון, סידורי עבודה ונסיעות ריקות</p>
+            </div>
+
+            <div class="question-card" data-field="planning_schedules">
+                <div class="question-title">
+                    <span class="icon">📅</span>
+                    <span>סידורי עבודה</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם יש בעיות בסידורי העבודה?</li>
+                        <li>האם השבתות נפתחות נכון?</li>
+                        <li>האם יש קודי קבוצה מיותרים?</li>
+                        <li>האם הזמנים בסידור ריאליים?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד בעיות בסידורי עבודה..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="planning_deadheads">
+                <div class="question-title">
+                    <span class="icon">🚌</span>
+                    <span>נסיעות ריקות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם יש נסיעות ריקות מיותרות?</li>
+                        <li>האם משתמשים בכלי הניטור?</li>
+                        <li>האם יש ריקות שנוצרות בגלל תכנון לקוי?</li>
+                        <li>מה אפשר לשפר?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים על נסיעות ריקות..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+
+            <div class="question-card" data-field="planning_rule168">
+                <div class="question-title">
+                    <span class="icon">⏰</span>
+                    <span>תקנה 168 והפסקות</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>שאלות מנחות:</strong>
+                    <ul>
+                        <li>האם יש בעיות בעמידה בתקנה 168?</li>
+                        <li>האם ההפסקות מתוכננות נכון?</li>
+                        <li>האם יש סידורים בעייתיים?</li>
+                        <li>האם יש מקומות מנוחה מתאימים?</li>
+                    </ul>
+                </div>
+                <textarea placeholder="תעד ממצאים בנושא תקנה 168..." oninput="updateCardStatus(this)"></textarea>
+                <div class="media-upload">
+                    <div class="upload-zone" onclick="this.querySelector('input').click()">
+                        <input type="file" accept="image/*,video/*" multiple onchange="handleMediaUpload(this)">
+                        <div class="icon">📎</div>
+                        <p>הוסף תמונות או סרטונים</p>
+                    </div>
+                    <div class="media-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: סיכום -->
+        <div class="section" id="section-summary">
+            <div class="section-header">
+                <h2>📝 סיכום הסיור</h2>
+                <p>סיכום כללי, פעולות נדרשות וייצוא</p>
+            </div>
+
+            <div class="question-card" data-field="summary_general">
+                <div class="question-title">
+                    <span class="icon">📄</span>
+                    <span>סיכום כללי</span>
+                </div>
+                <div class="guiding-questions">
+                    <strong>נקודות לסיכום:</strong>
+                    <ul>
+                        <li>מה הרושם הכללי מהסניף?</li>
+                        <li>מהן 3 הנקודות החשובות ביותר לטיפול?</li>
+                        <li>האם יש דברים חיוביים לציין?</li>
+                        <li>המלצות למעקב</li>
+                    </ul>
+                </div>
+                <textarea placeholder="כתוב סיכום כללי של הסיור..." oninput="updateCardStatus(this)" style="min-height: 150px;"></textarea>
+            </div>
+
+            <!-- Action Items Section -->
+            <div class="action-items-section">
+                <div class="action-items-header">
+                    <h3>✅ פעולות נדרשות</h3>
+                    <button class="btn btn-primary" onclick="addActionItem()">
+                        <span>➕</span> הוסף פעולה
+                    </button>
+                </div>
+                <div id="actionItemsList">
+                    <div class="empty-actions">
+                        <div class="icon">📋</div>
+                        <p>טרם הוגדרו פעולות נדרשות</p>
+                        <p style="font-size: 0.8rem;">לחץ "הוסף פעולה" להגדרת משימה חדשה</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="summary-section" id="summaryStats">
+                <h3>📊 סטטיסטיקות הטופס</h3>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSections">0</div>
+                        <div class="stat-label">קטגוריות מולאו</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statFields">0</div>
+                        <div class="stat-label">שדות מולאו</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statMedia">0</div>
+                        <div class="stat-label">קבצי מדיה</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statActions">0</div>
+                        <div class="stat-label">פעולות נדרשות</div>
+                    </div>
+                </div>
+
+                <div class="export-buttons">
+                    <button class="btn btn-danger" onclick="exportPDF()">
+                        <span>📕</span> ייצא PDF
+                    </button>
+                    <button class="btn btn-word" onclick="exportWord()">
+                        <span>📘</span> ייצא Word
+                    </button>
+                    <button class="btn btn-excel" onclick="exportExcel()">
+                        <span>📗</span> ייצא Excel
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveLocal()">
+                        <span>💾</span> שמור מקומית
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadLocal()">
+                        <span>📂</span> טען שמור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">נשמר בהצלחה!</div>
+
+    <footer class="footer">
+        <p>טופס סיור סניף | גרסה 2.0</p>
+        <p>הטופס רץ מקומית - הנתונים לא נשלחים לשרת</p>
+    </footer>
+
+    <!-- External Libraries for Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        // Initialize
+        document.getElementById('visitDate').valueAsDate = new Date();
+        
+        let actionItemCount = 0;
+        let mediaFiles = {};
+
+        // Loading overlay
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text || 'מייצא...';
+            document.getElementById('loadingOverlay').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const section = tab.dataset.section;
+                
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(`section-${section}`).classList.add('active');
+            });
+        });
+
+        // Update card status when content is added
+        function updateCardStatus(textarea) {
+            const card = textarea.closest('.question-card');
+            if (textarea.value.trim()) {
+                card.classList.add('has-content');
+            } else {
+                card.classList.remove('has-content');
+            }
+            updateNavBadges();
+            updateStats();
+        }
+
+        // Update navigation badges
+        function updateNavBadges() {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const sectionId = tab.dataset.section;
+                const section = document.getElementById(`section-${sectionId}`);
+                if (!section) return;
+                
+                const hasContent = section.querySelectorAll('.question-card.has-content').length > 0;
+                tab.classList.toggle('has-content', hasContent);
+            });
+        }
+
+        // Media upload handling
+        function handleMediaUpload(input) {
+            const preview = input.closest('.media-upload').querySelector('.media-preview');
+            const fieldId = input.closest('.question-card').dataset.field;
+            
+            if (!mediaFiles[fieldId]) mediaFiles[fieldId] = [];
+            
+            for (const file of input.files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const mediaItem = document.createElement('div');
+                    mediaItem.className = 'media-item';
+                    
+                    const isVideo = file.type.startsWith('video');
+                    if (isVideo) {
+                        mediaItem.innerHTML = `
+                            <video src="${e.target.result}"></video>
+                            <button class="remove-btn" onclick="removeMedia(this, '${fieldId}', ${mediaFiles[fieldId].length})">✕</button>
+                        `;
+                    } else {
+                        mediaItem.innerHTML = `
+                            <img src="${e.target.result}" alt="תמונה">
+                            <button class="remove-btn" onclick="removeMedia(this, '${fieldId}', ${mediaFiles[fieldId].length})">✕</button>
+                        `;
+                    }
+                    
+                    preview.appendChild(mediaItem);
+                    mediaFiles[fieldId].push({
+                        name: file.name,
+                        type: file.type,
+                        data: e.target.result
+                    });
+                    
+                    input.closest('.question-card').classList.add('has-content');
+                    updateNavBadges();
+                    updateStats();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeMedia(btn, fieldId, index) {
+            btn.closest('.media-item').remove();
+            if (mediaFiles[fieldId]) {
+                mediaFiles[fieldId].splice(index, 1);
+            }
+            updateStats();
+        }
+
+        // Action Items
+        function addActionItem() {
+            actionItemCount++;
+            const list = document.getElementById('actionItemsList');
+            
+            const emptyState = list.querySelector('.empty-actions');
+            if (emptyState) emptyState.remove();
+            
+            const item = document.createElement('div');
+            item.className = 'action-item';
+            item.dataset.id = actionItemCount;
+            item.innerHTML = `
+                <div class="action-item-header">
+                    <div class="action-item-number">${actionItemCount}</div>
+                    <button class="action-item-remove" onclick="removeActionItem(this)">🗑️</button>
+                </div>
+                <div class="action-item-fields">
+                    <div class="field-group full-width">
+                        <label>תיאור הפעולה</label>
+                        <input type="text" class="action-description" placeholder="מה צריך לעשות?">
+                    </div>
+                    <div class="field-group">
+                        <label>קטגוריה</label>
+                        <select class="action-category">
+                            <option value="manager">👔 מנהל סניף</option>
+                            <option value="dispatchers">👷 סדרנים/שבץ</option>
+                            <option value="drivers">🚌 נהגים</option>
+                            <option value="parking">🅿️ חניון</option>
+                            <option value="taxis">🚐 מוניות</option>
+                            <option value="tech">💻 טכנולוגיה</option>
+                            <option value="garage">🔧 מוסכים</option>
+                            <option value="planning">📊 תכנון</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>אחראי</label>
+                        <input type="text" class="action-assignee" placeholder="שם האחראי">
+                    </div>
+                    <div class="field-group">
+                        <label>תאריך יעד</label>
+                        <input type="date" class="action-due-date">
+                    </div>
+                    <div class="field-group">
+                        <label>עדיפות</label>
+                        <div class="priority-select">
+                            <div class="priority-option" data-priority="high" onclick="setPriority(this)">🔴 גבוהה</div>
+                            <div class="priority-option selected medium" data-priority="medium" onclick="setPriority(this)">🟡 בינונית</div>
+                            <div class="priority-option" data-priority="low" onclick="setPriority(this)">🟢 נמוכה</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            list.appendChild(item);
+            updateStats();
+        }
+
+        function removeActionItem(btn) {
+            btn.closest('.action-item').remove();
+            
+            const items = document.querySelectorAll('.action-item');
+            items.forEach((item, index) => {
+                item.querySelector('.action-item-number').textContent = index + 1;
+            });
+            
+            if (items.length === 0) {
+                document.getElementById('actionItemsList').innerHTML = `
+                    <div class="empty-actions">
+                        <div class="icon">📋</div>
+                        <p>טרם הוגדרו פעולות נדרשות</p>
+                        <p style="font-size: 0.8rem;">לחץ "הוסף פעולה" להגדרת משימה חדשה</p>
+                    </div>
+                `;
+            }
+            
+            updateStats();
+        }
+
+        function setPriority(el) {
+            const container = el.parentElement;
+            container.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.remove('selected', 'high', 'medium', 'low');
+            });
+            el.classList.add('selected', el.dataset.priority);
+        }
+
+        // Stats
+        function updateStats() {
+            const sections = document.querySelectorAll('.section:not(#section-summary)');
+            let filledSections = 0;
+            sections.forEach(section => {
+                if (section.querySelectorAll('.question-card.has-content').length > 0) {
+                    filledSections++;
+                }
+            });
+            document.getElementById('statSections').textContent = filledSections;
+            
+            const filledFields = document.querySelectorAll('.question-card.has-content').length;
+            document.getElementById('statFields').textContent = filledFields;
+            
+            let totalMedia = 0;
+            for (const field in mediaFiles) {
+                totalMedia += mediaFiles[field].length;
+            }
+            document.getElementById('statMedia').textContent = totalMedia;
+            
+            const actionItems = document.querySelectorAll('.action-item').length;
+            document.getElementById('statActions').textContent = actionItems;
+        }
+
+        // Collect form data
+        function collectFormData() {
+            const data = {
+                meta: {
+                    branchName: document.getElementById('branchName').value,
+                    visitDate: document.getElementById('visitDate').value,
+                    visitorName: document.getElementById('visitorName').value,
+                    branchManager: document.getElementById('branchManager').value,
+                    exportedAt: new Date().toISOString()
+                },
+                sections: {},
+                actionItems: [],
+                media: mediaFiles
+            };
+            
+            document.querySelectorAll('.question-card').forEach(card => {
+                const fieldId = card.dataset.field;
+                const textarea = card.querySelector('textarea');
+                if (fieldId && textarea) {
+                    data.sections[fieldId] = textarea.value;
+                }
+            });
+            
+            document.querySelectorAll('.action-item').forEach(item => {
+                const priorityEl = item.querySelector('.priority-option.selected');
+                data.actionItems.push({
+                    description: item.querySelector('.action-description')?.value || '',
+                    category: item.querySelector('.action-category')?.value || '',
+                    assignee: item.querySelector('.action-assignee')?.value || '',
+                    dueDate: item.querySelector('.action-due-date')?.value || '',
+                    priority: priorityEl?.dataset.priority || 'medium'
+                });
+            });
+            
+            return data;
+        }
+
+        const sectionNames = {
+            manager_challenges: '👔 מנהל סניף - אתגרים ובעיות',
+            manager_hr: '👔 מנהל סניף - כוח אדם',
+            manager_kpi: '👔 מנהל סניף - ביצועים',
+            dispatch_daily: '👷 סדרנים - אתגרים יומיומיים',
+            dispatch_communication: '👷 סדרנים - תקשורת',
+            dispatch_tools: '👷 סדרנים - כלים ומשאבים',
+            drivers_satisfaction: '🚌 נהגים - שביעות רצון',
+            drivers_routes: '🚌 נהגים - קווים וסידורים',
+            drivers_vehicles: '🚌 נהגים - רכבים',
+            drivers_compensation: '🚌 נהגים - שכר והטבות',
+            parking_safety: '🅿️ חניון - בטיחות',
+            parking_maintenance: '🅿️ חניון - תחזוקה',
+            parking_cleanliness: '🅿️ חניון - ניקיון',
+            parking_fuel: '🅿️ חניון - דלק',
+            taxis_service: '🚐 מוניות - איכות שירות',
+            taxis_local: '🚐 מוניות - נהגים מקומיים',
+            taxis_fairness: '🚐 מוניות - הוגנות',
+            tech_control_room: '💻 טכנולוגיה - חדר בקרה',
+            tech_systems: '💻 טכנולוגיה - מערכות',
+            tech_communication: '💻 טכנולוגיה - תקשורת',
+            garage_service: '🔧 מוסכים - שירות',
+            garage_process: '🔧 מוסכים - תהליכים',
+            planning_schedules: '📊 תכנון - סידורי עבודה',
+            planning_deadheads: '📊 תכנון - נסיעות ריקות',
+            planning_rule168: '📊 תכנון - תקנה 168',
+            summary_general: '📝 סיכום כללי'
+        };
+
+        const categoryNames = {
+            manager: '👔 מנהל סניף',
+            dispatchers: '👷 סדרנים/שבץ',
+            drivers: '🚌 נהגים',
+            parking: '🅿️ חניון',
+            taxis: '🚐 מוניות',
+            tech: '💻 טכנולוגיה',
+            garage: '🔧 מוסכים',
+            planning: '📊 תכנון'
+        };
+
+        // Export PDF
+        function exportPDF() {
+            showLoading('מכין PDF...');
+            const content = generateReportHTML();
+            
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: `סיור_${document.getElementById('branchName').value || 'סניף'}_${document.getElementById('visitDate').value}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: 'avoid-all', before: '.page-break' }
+            };
+            
+            const element = document.createElement('div');
+            element.innerHTML = content;
+            element.style.direction = 'rtl';
+            element.style.fontFamily = 'Heebo, Arial, sans-serif';
+            document.body.appendChild(element);
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                document.body.removeChild(element);
+                hideLoading();
+                showToast('PDF נוצר בהצלחה!');
+            }).catch(err => {
+                document.body.removeChild(element);
+                hideLoading();
+                showToast('שגיאה ביצירת PDF');
+                console.error(err);
+            });
+        }
+
+        // Export Word
+        function exportWord() {
+            showLoading('מכין Word...');
+            const content = generateReportHTML();
+            
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                      xmlns:w='urn:schemas-microsoft-com:office:word' 
+                      xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>סיור סניף</title>
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <w:WordDocument>
+                            <w:View>Print</w:View>
+                            <w:Zoom>100</w:Zoom>
+                            <w:DoNotOptimizeForBrowser/>
+                        </w:WordDocument>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        @page { size: A4; margin: 2cm; }
+                        body { font-family: 'Arial', sans-serif; direction: rtl; font-size: 12pt; line-height: 1.6; }
+                        h1 { font-size: 18pt; color: #1a1a2e; border-bottom: 2px solid #0066ff; padding-bottom: 10pt; }
+                        h2 { font-size: 14pt; color: #0066ff; margin-top: 20pt; }
+                        h3 { font-size: 12pt; color: #333; margin-top: 15pt; }
+                        .meta-table { width: 100%; border-collapse: collapse; margin: 15pt 0; }
+                        .meta-table td { padding: 8pt; border: 1px solid #ddd; }
+                        .meta-table td:first-child { background: #f5f5f5; font-weight: bold; width: 120pt; }
+                        .section { margin: 20pt 0; padding: 15pt; background: #fafafa; border-right: 4px solid #0066ff; }
+                        .content { margin: 10pt 0; padding: 10pt; background: white; border: 1px solid #eee; white-space: pre-wrap; }
+                        table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
+                        th, td { padding: 8pt; border: 1px solid #ddd; text-align: right; }
+                        th { background: #f0f0f0; }
+                        .priority-high { color: #dc3545; font-weight: bold; }
+                        .priority-medium { color: #ffc107; }
+                        .priority-low { color: #28a745; }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
+            saveAs(blob, `סיור_${document.getElementById('branchName').value || 'סניף'}_${document.getElementById('visitDate').value}.doc`);
+            hideLoading();
+            showToast('Word נוצר בהצלחה!');
+        }
+
+        // Export Excel
+        function exportExcel() {
+            showLoading('מכין Excel...');
+            const data = collectFormData();
+            
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // Sheet 1: פרטי הסיור
+                const metaData = [
+                    ['📋 דוח סיור סניף'],
+                    [],
+                    ['שדה', 'ערך'],
+                    ['שם הסניף', data.meta.branchName],
+                    ['תאריך סיור', data.meta.visitDate],
+                    ['שם הסייר', data.meta.visitorName],
+                    ['מנהל הסניף', data.meta.branchManager],
+                    ['תאריך יצירת הדוח', new Date().toLocaleString('he-IL')]
+                ];
+                const ws1 = XLSX.utils.aoa_to_sheet(metaData);
+                ws1['!cols'] = [{ width: 20 }, { width: 40 }];
+                XLSX.utils.book_append_sheet(wb, ws1, 'פרטי סיור');
+                
+                // Sheet 2: ממצאים
+                const findingsData = [['קטגוריה', 'ממצאים']];
+                for (const [key, value] of Object.entries(data.sections)) {
+                    if (value.trim()) {
+                        findingsData.push([sectionNames[key] || key, value]);
+                    }
+                }
+                const ws2 = XLSX.utils.aoa_to_sheet(findingsData);
+                ws2['!cols'] = [{ width: 30 }, { width: 80 }];
+                XLSX.utils.book_append_sheet(wb, ws2, 'ממצאים');
+                
+                // Sheet 3: פעולות נדרשות
+                const priorityNames = { high: 'גבוהה 🔴', medium: 'בינונית 🟡', low: 'נמוכה 🟢' };
+                const actionsData = [['#', 'תיאור', 'קטגוריה', 'אחראי', 'תאריך יעד', 'עדיפות']];
+                data.actionItems.forEach((item, i) => {
+                    actionsData.push([
+                        i + 1,
+                        item.description,
+                        categoryNames[item.category] || item.category,
+                        item.assignee,
+                        item.dueDate,
+                        priorityNames[item.priority] || item.priority
+                    ]);
+                });
+                const ws3 = XLSX.utils.aoa_to_sheet(actionsData);
+                ws3['!cols'] = [{ width: 5 }, { width: 50 }, { width: 20 }, { width: 15 }, { width: 12 }, { width: 12 }];
+                XLSX.utils.book_append_sheet(wb, ws3, 'פעולות נדרשות');
+                
+                XLSX.writeFile(wb, `סיור_${data.meta.branchName || 'סניף'}_${data.meta.visitDate}.xlsx`);
+                hideLoading();
+                showToast('Excel נוצר בהצלחה!');
+            } catch (err) {
+                hideLoading();
+                showToast('שגיאה ביצירת Excel');
+                console.error(err);
+            }
+        }
+
+        function generateReportHTML() {
+            const data = collectFormData();
+            
+            let html = `
+                <h1>📋 דוח סיור סניף</h1>
+                
+                <table class="meta-table">
+                    <tr><td>שם הסניף</td><td><strong>${data.meta.branchName || '-'}</strong></td></tr>
+                    <tr><td>תאריך סיור</td><td>${data.meta.visitDate || '-'}</td></tr>
+                    <tr><td>שם הסייר</td><td>${data.meta.visitorName || '-'}</td></tr>
+                    <tr><td>מנהל הסניף</td><td>${data.meta.branchManager || '-'}</td></tr>
+                </table>
+                
+                <h2>📊 ממצאים</h2>
+            `;
+            
+            const categories = {
+                'מנהל סניף': ['manager_challenges', 'manager_hr', 'manager_kpi'],
+                'סדרנים/שבץ': ['dispatch_daily', 'dispatch_communication', 'dispatch_tools'],
+                'נהגים': ['drivers_satisfaction', 'drivers_routes', 'drivers_vehicles', 'drivers_compensation'],
+                'חניון': ['parking_safety', 'parking_maintenance', 'parking_cleanliness', 'parking_fuel'],
+                'מוניות': ['taxis_service', 'taxis_local', 'taxis_fairness'],
+                'טכנולוגיה': ['tech_control_room', 'tech_systems', 'tech_communication'],
+                'מוסכים': ['garage_service', 'garage_process'],
+                'תכנון': ['planning_schedules', 'planning_deadheads', 'planning_rule168'],
+                'סיכום': ['summary_general']
+            };
+            
+            for (const [catName, fields] of Object.entries(categories)) {
+                const filledFields = fields.filter(f => data.sections[f]?.trim());
+                if (filledFields.length === 0) continue;
+                
+                html += `<div class="section"><h3>${catName}</h3>`;
+                for (const field of filledFields) {
+                    html += `
+                        <p><strong>${sectionNames[field]}</strong></p>
+                        <div class="content">${data.sections[field].replace(/\n/g, '<br>')}</div>
+                    `;
+                }
+                html += `</div>`;
+            }
+            
+            if (data.actionItems.length > 0) {
+                html += `
+                    <h2>✅ פעולות נדרשות</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>תיאור</th>
+                                <th>קטגוריה</th>
+                                <th>אחראי</th>
+                                <th>תאריך יעד</th>
+                                <th>עדיפות</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.actionItems.forEach((item, i) => {
+                    const priorityClass = `priority-${item.priority}`;
+                    const priorityText = item.priority === 'high' ? '🔴 גבוהה' : 
+                                        item.priority === 'medium' ? '🟡 בינונית' : '🟢 נמוכה';
+                    html += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${item.description}</td>
+                            <td>${categoryNames[item.category] || item.category}</td>
+                            <td>${item.assignee}</td>
+                            <td>${item.dueDate}</td>
+                            <td class="${priorityClass}">${priorityText}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `</tbody></table>`;
+            }
+            
+            html += `
+                <p style="margin-top: 30pt; color: #666; font-size: 10pt; text-align: center;">
+                    דוח זה נוצר אוטומטית מטופס סיור סניף | ${new Date().toLocaleString('he-IL')}
+                </p>
+            `;
+            
+            return html;
+        }
+
+        function saveLocal() {
+            const data = collectFormData();
+            localStorage.setItem('branchInspectionForm', JSON.stringify(data));
+            showToast('הטופס נשמר מקומית!');
+        }
+
+        function loadLocal() {
+            const saved = localStorage.getItem('branchInspectionForm');
+            if (!saved) {
+                showToast('לא נמצא טופס שמור');
+                return;
+            }
+            
+            const data = JSON.parse(saved);
+            
+            document.getElementById('branchName').value = data.meta.branchName || '';
+            document.getElementById('visitDate').value = data.meta.visitDate || '';
+            document.getElementById('visitorName').value = data.meta.visitorName || '';
+            document.getElementById('branchManager').value = data.meta.branchManager || '';
+            
+            for (const [fieldId, value] of Object.entries(data.sections)) {
+                const card = document.querySelector(`[data-field="${fieldId}"]`);
+                if (card) {
+                    const textarea = card.querySelector('textarea');
+                    if (textarea) {
+                        textarea.value = value;
+                        updateCardStatus(textarea);
+                    }
+                }
+            }
+            
+            const actionsList = document.getElementById('actionItemsList');
+            actionsList.innerHTML = '';
+            actionItemCount = 0;
+            
+            if (data.actionItems && data.actionItems.length > 0) {
+                data.actionItems.forEach(item => {
+                    addActionItem();
+                    const lastItem = actionsList.lastElementChild;
+                    lastItem.querySelector('.action-description').value = item.description;
+                    lastItem.querySelector('.action-category').value = item.category;
+                    lastItem.querySelector('.action-assignee').value = item.assignee;
+                    lastItem.querySelector('.action-due-date').value = item.dueDate;
+                    
+                    const priorityEl = lastItem.querySelector(`[data-priority="${item.priority}"]`);
+                    if (priorityEl) setPriority(priorityEl);
+                });
+            } else {
+                actionsList.innerHTML = `
+                    <div class="empty-actions">
+                        <div class="icon">📋</div>
+                        <p>טרם הוגדרו פעולות נדרשות</p>
+                        <p style="font-size: 0.8rem;">לחץ "הוסף פעולה" להגדרת משימה חדשה</p>
+                    </div>
+                `;
+            }
+            
+            mediaFiles = {};
+            updateStats();
+            showToast('הטופס נטען בהצלחה!');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        updateStats();
+    </script>
+</body>
+</html>
