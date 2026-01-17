@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כלי ניתוח מכרזי תחבורה</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; direction: rtl; }
+        
+        .header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; padding: 24px; text-align: center; }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+        .card-header { background: #f8f9fa; padding: 16px 20px; border-bottom: 1px solid #e9ecef; font-weight: bold; font-size: 16px; }
+        .card-body { padding: 20px; }
+        
+        .mode-buttons { display: flex; gap: 12px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; padding: 16px; border: 2px solid #e0e0e0; border-radius: 10px; background: white; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .mode-btn:hover { border-color: #2d5a87; }
+        .mode-btn.active { border-color: #2d5a87; background: #e8f0f7; }
+        .mode-btn .icon { font-size: 28px; margin-bottom: 8px; }
+        .mode-btn .title { font-weight: bold; font-size: 15px; }
+        .mode-btn .desc { font-size: 12px; color: #666; margin-top: 4px; }
+        
+        .upload-area { border: 3px dashed #c0c0c0; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .upload-area:hover { border-color: #2d5a87; background: #f8f9fa; }
+        .upload-area.dragover { border-color: #2d5a87; background: #e8f0f7; }
+        .upload-area .icon { font-size: 48px; margin-bottom: 12px; }
+        .upload-area input { display: none; }
+        
+        .file-list { margin-top: 16px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; background: #e8f0f7; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; }
+        .file-item .name { font-weight: 500; }
+        .file-item .size { color: #666; font-size: 13px; margin-right: 8px; }
+        .file-item .remove { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 20px; padding: 4px 8px; }
+        
+        .analyze-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
+        .analyze-btn:hover:not(:disabled) { transform: scale(1.01); }
+        .analyze-btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .status-box { margin-top: 16px; padding: 16px; border-radius: 8px; display: none; }
+        .status-box.show { display: flex; align-items: center; gap: 12px; }
+        .status-box.info { background: #e8f0f7; color: #1e3a5f; }
+        .status-box.success { background: #d4edda; color: #155724; }
+        .status-box.error { background: #f8d7da; color: #721c24; }
+        .spinner { width: 20px; height: 20px; border: 3px solid #ccc; border-top-color: #1e3a5f; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .results { display: none; }
+        .results.show { display: block; }
+        
+        .recommendation { padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .recommendation.go { background: #d4edda; border-right: 6px solid #28a745; }
+        .recommendation.conditional { background: #fff3cd; border-right: 6px solid #ffc107; }
+        .recommendation.nogo { background: #f8d7da; border-right: 6px solid #dc3545; }
+        .recommendation h3 { font-size: 20px; margin-bottom: 8px; }
+        
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .metric { background: linear-gradient(135deg, #e8f4fc, #d0e8f7); padding: 16px; border-radius: 10px; text-align: center; }
+        .metric .value { font-size: 20px; font-weight: bold; color: #1e3a5f; }
+        .metric .label { font-size: 12px; color: #666; margin-top: 4px; }
+        
+        .section { border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .section-header { padding: 14px 16px; background: #f8f9fa; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+        .section-header:hover { background: #f0f0f0; }
+        .section-content { padding: 16px; display: none; border-top: 1px solid #e0e0e0; }
+        .section-content.show { display: block; }
+        
+        .flag { padding: 12px 16px; margin-bottom: 10px; border-radius: 6px; }
+        .flag.red { background: #fff5f5; border-right: 4px solid #dc3545; }
+        .flag.green { background: #f0fff4; border-right: 4px solid #28a745; }
+        .flag strong { display: block; margin-bottom: 4px; }
+        .flag .ref { color: #666; font-size: 13px; }
+        
+        .action-item { background: #e8f4fc; padding: 12px 16px; margin-bottom: 8px; border-radius: 6px; border-right: 3px solid #1e3a5f; }
+        .question-item { background: #fff8e1; padding: 12px 16px; margin-bottom: 8px; border-radius: 6px; border-right: 3px solid #ffc107; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1e3a5f; color: white; padding: 12px; text-align: right; }
+        td { padding: 10px 12px; border: 1px solid #e0e0e0; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        
+        .download-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 16px; margin-left: 10px; }
+        .download-btn:hover { background: #218838; }
+        .download-btn.primary { background: #1e3a5f; }
+        .download-btn.primary:hover { background: #2d5a87; }
+        
+        .comparison-card { background: #f8f0ff; border: 2px solid #6f42c1; }
+        .comparison-table { overflow-x: auto; margin: 15px 0; }
+        .comparison-table table th { background: #6f42c1; }
+        .best-choice { background: #d4edda; border: 2px solid #28a745; padding: 20px; border-radius: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚌 כלי ניתוח מכרזי תחבורה</h1>
+        <p>ניתוח מכרז בודד או השוואת 2-3 מכרזים עם יצירת תקציר Word מפורט</p>
+    </div>
+    
+    <div class="container">
+        <!-- Mode Selection -->
+        <div class="card">
+            <div class="card-header">🔑 הגדרות API</div>
+            <div class="card-body">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <input type="password" id="apiKeyInput" placeholder="הכנס Anthropic API Key..." style="flex: 1; min-width: 300px; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; direction: ltr;">
+                    <span id="apiStatus" style="padding: 8px 16px; border-radius: 20px; font-size: 13px; background: #f8d7da; color: #721c24;">לא הוזן</span>
+                </div>
+                <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                    קבל מפתח מ-<a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> (יש להירשם ולקבל קרדיט חינמי)
+                </p>
+            </div>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="card">
+            <div class="card-header">📋 בחר מצב עבודה</div>
+            <div class="card-body">
+                <div class="mode-buttons">
+                    <div class="mode-btn active" data-mode="single" onclick="setMode('single')">
+                        <div class="icon">📄</div>
+                        <div class="title">ניתוח מכרז בודד</div>
+                        <div class="desc">תקציר Word מפורט (~2000 מילים)</div>
+                    </div>
+                    <div class="mode-btn" data-mode="compare" onclick="setMode('compare')">
+                        <div class="icon">📊</div>
+                        <div class="title">השוואת מכרזים</div>
+                        <div class="desc">השוואת 2-3 מכרזים בקובץ אחד</div>
+                    </div>
+                </div>
+                
+                <!-- Upload -->
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="icon">📁</div>
+                    <div><strong id="uploadText">העלה קובץ מכרז (PDF)</strong></div>
+                    <div style="font-size: 13px; color: #666; margin-top: 8px;">לחץ או גרור קובץ • תומך בכל גודל</div>
+                    <input type="file" id="fileInput" accept=".pdf" onchange="handleFiles(this.files)">
+                </div>
+                
+                <div class="file-list" id="fileList"></div>
+                
+                <button class="analyze-btn" id="analyzeBtn" onclick="analyze()" disabled>🔍 נתח מכרז</button>
+                
+                <div class="status-box" id="statusBox">
+                    <div class="spinner" id="spinner"></div>
+                    <span id="statusText"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="results" id="results"></div>
+    </div>
+    
+    <script>
+        // Initialize PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // API Key from user input
+        let currentMode = 'single';
+        let uploadedFiles = [];
+        let analyses = [];
+        let comparisonData = null;
+        
+        // API Key validation
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const apiStatus = document.getElementById('apiStatus');
+        
+        apiKeyInput.addEventListener('input', function() {
+            const key = this.value.trim();
+            if (key.startsWith('sk-ant-') && key.length > 30) {
+                apiStatus.textContent = '✓ מפתח תקין';
+                apiStatus.style.background = '#d4edda';
+                apiStatus.style.color = '#155724';
+            } else if (key.length > 0) {
+                apiStatus.textContent = 'מפתח לא תקין';
+                apiStatus.style.background = '#f8d7da';
+                apiStatus.style.color = '#721c24';
+            } else {
+                apiStatus.textContent = 'לא הוזן';
+                apiStatus.style.background = '#f8d7da';
+                apiStatus.style.color = '#721c24';
+            }
+            updateAnalyzeButton();
+        });
+        
+        function getApiKey() {
+            return apiKeyInput.value.trim();
+        }
+        
+        function isApiKeyValid() {
+            const key = getApiKey();
+            return key.startsWith('sk-ant-') && key.length > 30;
+        }
+        
+        // Mode selection
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            const fileInput = document.getElementById('fileInput');
+            const uploadText = document.getElementById('uploadText');
+            
+            if (mode === 'single') {
+                fileInput.removeAttribute('multiple');
+                uploadText.textContent = 'העלה קובץ מכרז (PDF)';
+            } else {
+                fileInput.setAttribute('multiple', 'multiple');
+                uploadText.textContent = 'העלה 2-3 קבצי מכרז (PDF)';
+            }
+            
+            uploadedFiles = [];
+            analyses = [];
+            comparisonData = null;
+            renderFileList();
+            updateAnalyzeButton();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        // File handling
+        function handleFiles(files) {
+            const maxFiles = currentMode === 'single' ? 1 : 3;
+            
+            for (let file of files) {
+                if (file.type !== 'application/pdf') {
+                    showStatus('רק קבצי PDF מותרים', 'error');
+                    continue;
+                }
+                if (uploadedFiles.length >= maxFiles) {
+                    showStatus(`מקסימום ${maxFiles} קבצים`, 'error');
+                    break;
+                }
+                uploadedFiles.push(file);
+            }
+            
+            renderFileList();
+            updateAnalyzeButton();
+        }
+        
+        function renderFileList() {
+            const list = document.getElementById('fileList');
+            list.innerHTML = uploadedFiles.map((f, i) => `
+                <div class="file-item">
+                    <div>
+                        <span class="name">📄 ${f.name}</span>
+                        <span class="size">(${(f.size / 1024 / 1024).toFixed(1)} MB)</span>
+                    </div>
+                    <button class="remove" onclick="removeFile(${i})">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderFileList();
+            updateAnalyzeButton();
+        }
+        
+        function updateAnalyzeButton() {
+            const btn = document.getElementById('analyzeBtn');
+            const hasFiles = uploadedFiles.length > 0;
+            const minFiles = currentMode === 'compare' ? 2 : 1;
+            const hasValidKey = isApiKeyValid();
+            btn.disabled = uploadedFiles.length < minFiles || !hasValidKey;
+            
+            if (!hasValidKey) {
+                btn.textContent = '🔑 יש להזין API Key תחילה';
+            } else {
+                btn.textContent = currentMode === 'single' ? '🔍 נתח מכרז וצור Word' : '📊 השווה מכרזים וצור Word';
+            }
+        }
+        
+        function showStatus(text, type = 'info', showSpinner = false) {
+            const box = document.getElementById('statusBox');
+            const spinner = document.getElementById('spinner');
+            const statusText = document.getElementById('statusText');
+            
+            box.className = `status-box show ${type}`;
+            spinner.style.display = showSpinner ? 'block' : 'none';
+            statusText.textContent = text;
+        }
+        
+        function hideStatus() {
+            document.getElementById('statusBox').classList.remove('show');
+        }
+        
+        // Extract text from PDF
+        async function extractText(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            
+            let text = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                showStatus(`מחלץ טקסט: עמוד ${i}/${pdf.numPages}...`, 'info', true);
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                text += content.items.map(item => item.str).join(' ') + '\n';
+            }
+            
+            return { text, pages: pdf.numPages };
+        }
+        
+        // Call Claude API
+        async function callClaude(prompt) {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': getApiKey(),
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 16000,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+            
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(`שגיאת API: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.content[0].text;
+        }
+        
+        const ANALYSIS_PROMPT = `אתה מומחה לניתוח מכרזי תחבורה ציבורית בישראל. נתח את המכרז והפק תקציר מפורט.
+
+חשוב מאוד: 
+1. החזר JSON תקין בלבד - ללא טקסט לפני או אחרי
+2. אל תשתמש בגרשיים כפולים בתוך טקסט - השתמש בגרש בודד
+3. הפק תוכן מפורט ועשיר בכל שדה
+
+{
+  "tenderName": "שם המכרז",
+  "tenderNumber": "מספר",
+  "submissionDate": "תאריך הגשה",
+  "clarificationDate": "תאריך שאלות הבהרה",
+  "recommendation": "GO או GO מותנה או NO-GO",
+  "recommendationReason": "הסבר מפורט להמלצה ב-3-5 משפטים",
+  "executiveSummary": "תקציר מנהלים מקיף של 150-200 מילים",
+  "annualCost": "עלות שנתית",
+  "annualKm": "קמ שנתי",
+  "fleetSize": "מספר אוטובוסים",
+  "fleetType": "סוג צי",
+  "operationPeriod": "תקופת הפעלה",
+  "outgoingOperator": "מפעיל יוצא",
+  "serviceArea": "אזור שירות - תיאור מפורט",
+  "redFlags": [
+    {"title": "כותרת", "description": "תיאור מפורט של 30-50 מילים", "reference": "סעיף", "severity": "גבוה/בינוני", "mitigation": "הצעה להתמודדות"}
+  ],
+  "opportunities": [
+    {"title": "כותרת", "description": "תיאור מפורט של 30-50 מילים", "reference": "סעיף", "potential": "פוטנציאל"}
+  ],
+  "scoringTable": [
+    {"criterion": "קריטריון", "points": 0, "description": "הסבר קצר"}
+  ],
+  "financialBidMechanism": "תיאור מנגנון ההצעה הכספית ב-50-100 מילים",
+  "guarantees": {"tender": "ערבות מכרז", "performance": "ערבות ביצוע"},
+  "penalties": {"breachThreshold": "סף הפרה", "nonExecution": "קנס אי ביצוע", "otherPenalties": "קנסות נוספים"},
+  "passengerIncentives": [
+    {"tier": "מדרגה", "rate": "תמריץ בשח", "range": "טווח"}
+  ],
+  "incentivePotential": "פוטנציאל שנתי",
+  "localAssembly": "דרישות הרכבה מקומית",
+  "actionItems": ["פעולה 1", "פעולה 2", "פעולה 3", "פעולה 4", "פעולה 5"],
+  "clarificationQuestions": ["שאלה 1", "שאלה 2", "שאלה 3", "שאלה 4", "שאלה 5"],
+  "competitorAnalysis": "ניתוח תחרות ב-50-100 מילים",
+  "strategicConsiderations": "שיקולים אסטרטגיים ב-50-100 מילים",
+  "fullSummary": "סיכום מלא ומפורט של המכרז ב-300-400 מילים"
+}
+
+טקסט המכרז:
+`;
+
+        const COMPARISON_PROMPT = `אתה מומחה להשוואת מכרזי תחבורה ציבורית. השווה בין המכרזים הבאים והפק ניתוח השוואתי מעמיק.
+
+החזר JSON בלבד:
+{
+  "comparisonSummary": "סיכום השוואה מקיף של 200-300 מילים",
+  "comparisonTable": [
+    {"parameter": "שם פרמטר", "values": ["ערך מכרז 1", "ערך מכרז 2", "ערך מכרז 3"], "winner": "שם המכרז הטוב ביותר בפרמטר זה", "notes": "הערות"}
+  ],
+  "rankings": [
+    {"rank": 1, "tenderName": "שם", "score": 85, "recommendation": "GO/NO-GO", "strengths": "חוזקות", "weaknesses": "חולשות"}
+  ],
+  "bestChoice": "שם המכרז המומלץ",
+  "bestChoiceReason": "הסבר מפורט של 100-150 מילים מדוע זה המכרז הטוב ביותר",
+  "warnings": ["אזהרה חשובה 1", "אזהרה 2"],
+  "synergyOpportunities": "הזדמנויות סינרגיה בין המכרזים אם רלוונטי",
+  "resourceConsiderations": "שיקולי משאבים - האם אפשר להתמודד על כולם"
+}
+
+נתוני המכרזים:
+`;
+        
+        // Main analyze function
+        async function analyze() {
+            if (!isApiKeyValid()) {
+                showStatus('❌ יש להזין API Key תקין', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            analyses = [];
+            comparisonData = null;
+            
+            try {
+                // Analyze each file
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const file = uploadedFiles[i];
+                    
+                    showStatus(`מחלץ טקסט מ-${file.name}...`, 'info', true);
+                    const { text, pages } = await extractText(file);
+                    
+                    const maxChars = 100000;
+                    const truncated = text.length > maxChars ? text.substring(0, maxChars) + '\n[קוצר]' : text;
+                    
+                    showStatus(`מנתח ${file.name} (${pages} עמודים)... זה יכול לקחת 1-2 דקות`, 'info', true);
+                    const response = await callClaude(ANALYSIS_PROMPT + truncated);
+                    
+                    const match = response.match(/\{[\s\S]*\}/);
+                    if (!match) throw new Error('לא נמצא JSON בתשובה');
+                    
+                    let jsonStr = match[0];
+                    // Clean up common JSON issues
+                    jsonStr = jsonStr
+                        .replace(/[\u0000-\u001F]+/g, ' ') // Remove control characters
+                        .replace(/,\s*}/g, '}') // Remove trailing commas
+                        .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
+                        .replace(/"\s*\n\s*"/g, '" "'); // Fix split strings
+                    
+                    let analysis;
+                    try {
+                        analysis = JSON.parse(jsonStr);
+                    } catch (parseError) {
+                        console.error('JSON Parse Error:', parseError);
+                        console.log('Raw JSON:', jsonStr.substring(0, 500));
+                        // Try to extract basic info even if full parse fails
+                        analysis = {
+                            tenderName: (jsonStr.match(/"tenderName"\s*:\s*"([^"]+)"/) || [])[1] || file.name,
+                            tenderNumber: (jsonStr.match(/"tenderNumber"\s*:\s*"([^"]+)"/) || [])[1] || '-',
+                            recommendation: (jsonStr.match(/"recommendation"\s*:\s*"([^"]+)"/) || [])[1] || 'לא זמין',
+                            recommendationReason: 'שגיאה בפענוח התשובה המלאה - נסה שוב',
+                            redFlags: [],
+                            opportunities: [],
+                            scoringTable: [],
+                            actionItems: [],
+                            clarificationQuestions: []
+                        };
+                        showStatus('⚠️ התקבלה תשובה חלקית - חלק מהנתונים חסרים', 'error');
+                    }
+                    analysis.fileName = file.name;
+                    analysis.pageCount = pages;
+                    analyses.push(analysis);
+                }
+                
+                // If comparing, create comparison
+                if (currentMode === 'compare' && analyses.length > 1) {
+                    showStatus('יוצר השוואה מפורטת...', 'info', true);
+                    const compResponse = await callClaude(COMPARISON_PROMPT + JSON.stringify(analyses, null, 2));
+                    const compMatch = compResponse.match(/\{[\s\S]*\}/);
+                    if (compMatch) {
+                        comparisonData = JSON.parse(compMatch[0]);
+                    }
+                }
+                
+                showStatus('✅ הניתוח הושלם!', 'success');
+                setTimeout(hideStatus, 3000);
+                
+                renderResults();
+                
+            } catch (err) {
+                showStatus('❌ ' + err.message, 'error');
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                updateAnalyzeButton();
+            }
+        }
+        
+        function renderResults() {
+            const container = document.getElementById('results');
+            container.classList.add('show');
+            
+            let html = '';
+            
+            // Comparison section (if applicable)
+            if (comparisonData && analyses.length > 1) {
+                html += `
+                <div class="card comparison-card">
+                    <div class="card-header" style="background: #6f42c1; color: white;">
+                        📊 השוואת מכרזים
+                    </div>
+                    <div class="card-body">
+                        <p style="margin-bottom: 15px;">${comparisonData.comparisonSummary || ''}</p>
+                        
+                        <div class="comparison-table">
+                            <table>
+                                <tr>
+                                    <th>פרמטר</th>
+                                    ${analyses.map(a => `<th>${a.tenderName || a.fileName}</th>`).join('')}
+                                </tr>
+                                ${(comparisonData.comparisonTable || []).map(row => `
+                                    <tr>
+                                        <td><strong>${row.parameter}</strong></td>
+                                        ${(row.values || []).map(v => `<td>${v}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+                        
+                        ${comparisonData.bestChoice ? `
+                        <div class="best-choice">
+                            <h3>🏆 המלצה: ${comparisonData.bestChoice}</h3>
+                            <p>${comparisonData.bestChoiceReason || ''}</p>
+                        </div>
+                        ` : ''}
+                        
+                        ${comparisonData.warnings?.length ? `
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <strong>⚠️ אזהרות:</strong>
+                            <ul style="margin: 10px 0 0 0; padding-right: 20px;">
+                                ${comparisonData.warnings.map(w => `<li>${w}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        <button class="download-btn primary" onclick="downloadCombinedWord()">📥 הורד השוואה + כל התקצירים (Word)</button>
+                    </div>
+                </div>
+                `;
+            }
+            
+            // Individual analyses
+            for (const a of analyses) {
+                const recClass = a.recommendation === 'GO' ? 'go' : a.recommendation?.includes('מותנה') ? 'conditional' : 'nogo';
+                
+                html += `
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white;">
+                        📄 ${a.tenderName || a.fileName}
+                        <span style="font-weight: normal; font-size: 13px;">מספר: ${a.tenderNumber || '-'} | ${a.pageCount} עמודים</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="recommendation ${recClass}">
+                            <h3>המלצה: ${a.recommendation || '-'}</h3>
+                            <p>${a.recommendationReason || ''}</p>
+                        </div>
+                        
+                        ${a.executiveSummary ? `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <strong>תקציר מנהלים:</strong>
+                            <p style="margin-top: 8px;">${a.executiveSummary}</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="metrics">
+                            <div class="metric"><div class="value">${a.annualCost || '-'}</div><div class="label">עלות שנתית</div></div>
+                            <div class="metric"><div class="value">${a.annualKm || '-'}</div><div class="label">ק"מ שנתי</div></div>
+                            <div class="metric"><div class="value">${a.fleetSize || '-'}</div><div class="label">אוטובוסים</div></div>
+                            <div class="metric"><div class="value">${a.fleetType || '-'}</div><div class="label">סוג צי</div></div>
+                            <div class="metric"><div class="value">${a.incentivePotential || '-'}</div><div class="label">תמריצים</div></div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">🚩 דגלים אדומים (${a.redFlags?.length || 0}) <span>▼</span></div>
+                            <div class="section-content">
+                                ${(a.redFlags || []).map(f => `
+                                    <div class="flag red">
+                                        <strong>${f.title}</strong> <span class="ref">(${f.reference}) - חומרה: ${f.severity || 'לא צוין'}</span>
+                                        <p>${f.description}</p>
+                                        ${f.mitigation ? `<p style="color: #155724; margin-top: 8px;"><strong>התמודדות:</strong> ${f.mitigation}</p>` : ''}
+                                    </div>
+                                `).join('') || '<p>לא זוהו</p>'}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">✅ הזדמנויות (${a.opportunities?.length || 0}) <span>▼</span></div>
+                            <div class="section-content">
+                                ${(a.opportunities || []).map(o => `
+                                    <div class="flag green">
+                                        <strong>${o.title}</strong> <span class="ref">(${o.reference})</span>
+                                        <p>${o.description}</p>
+                                        ${o.potential ? `<p style="color: #1e3a5f; margin-top: 8px;"><strong>פוטנציאל:</strong> ${o.potential}</p>` : ''}
+                                    </div>
+                                `).join('') || '<p>לא זוהו</p>'}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">📊 טבלת ניקוד <span>▼</span></div>
+                            <div class="section-content">
+                                <table>
+                                    <tr><th>קריטריון</th><th style="width:80px">נקודות</th><th>הסבר</th></tr>
+                                    ${(a.scoringTable || []).map(s => `<tr><td>${s.criterion}</td><td style="text-align:center;font-weight:bold">${s.points}</td><td style="font-size:13px">${s.description || '-'}</td></tr>`).join('')}
+                                </table>
+                                <p style="margin-top:12px"><strong>מנגנון הצעה כספית:</strong> ${a.financialBidMechanism || '-'}</p>
+                                ${a.financialFormula ? `<p><strong>נוסחה:</strong> ${a.financialFormula}</p>` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">💰 תמריצי נוסעים <span>▼</span></div>
+                            <div class="section-content">
+                                <table>
+                                    <tr><th>מדרגה</th><th>תמריץ</th><th>טווח</th><th>חישוב</th></tr>
+                                    ${(a.passengerIncentives || []).map(i => `<tr><td>${i.tier}</td><td style="text-align:center">${i.rate} ₪</td><td>${i.range || '-'}</td><td style="font-size:13px">${i.calculation || '-'}</td></tr>`).join('')}
+                                </table>
+                                <p style="margin-top:12px"><strong>פוטנציאל שנתי:</strong> ${a.incentivePotential || '-'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">📋 נקודות פעולה (${a.actionItems?.length || 0}) <span>▼</span></div>
+                            <div class="section-content">
+                                ${(a.actionItems || []).map((x, i) => `<div class="action-item"><strong>${i+1}.</strong> ${x}</div>`).join('') || '<p>לא הוגדרו</p>'}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">❓ שאלות הבהרה (${a.clarificationQuestions?.length || 0}) <span>▼</span></div>
+                            <div class="section-content">
+                                ${(a.clarificationQuestions || []).map((x, i) => `<div class="question-item"><strong>${i+1}.</strong> ${x}</div>`).join('') || '<p>לא הוגדרו</p>'}
+                            </div>
+                        </div>
+                        
+                        ${a.fullSummary ? `
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection(this)">📝 סיכום מלא <span>▼</span></div>
+                            <div class="section-content">
+                                <p>${a.fullSummary}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${currentMode === 'single' ? `<button class="download-btn" onclick="downloadWord(${analyses.indexOf(a)})">📥 הורד תקציר Word</button>` : ''}
+                    </div>
+                </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('span');
+            content.classList.toggle('show');
+            arrow.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+        
+        function generateWordContent(a) {
+            const recColor = a.recommendation === 'GO' ? '#28a745' : (a.recommendation || '').includes('מותנה') ? '#ffc107' : '#dc3545';
+            const recBg = a.recommendation === 'GO' ? '#d4edda' : (a.recommendation || '').includes('מותנה') ? '#fff3cd' : '#f8d7da';
+            
+            return `
+<div style="page-break-before: always;"></div>
+<h1 style="color:#1F4E79;border-bottom:3px solid #1F4E79;padding-bottom:10px;">🚌 תקציר מכרז: ${a.tenderName || ''}</h1>
+
+<table style="margin-bottom:15px;border:none;width:100%;">
+<tr style="border:none;">
+<td style="border:none;padding:5px;"><strong>מספר מכרז:</strong> ${a.tenderNumber || '-'}</td>
+<td style="border:none;padding:5px;"><strong>מועד הגשה:</strong> ${a.submissionDate || '-'}</td>
+<td style="border:none;padding:5px;"><strong>שאלות הבהרה:</strong> ${a.clarificationDate || '-'}</td>
+</tr>
+</table>
+
+<div style="padding:15px;margin:15px 0;border-right:5px solid ${recColor};background:${recBg};">
+<h2 style="margin:0 0 8px 0;color:#333;">סעיף 0 - המלצה: ${a.recommendation || '-'}</h2>
+<p>${a.recommendationReason || ''}</p>
+</div>
+
+${a.executiveSummary ? `
+<div style="background:#f8f9fa;padding:15px;border-radius:8px;margin:15px 0;">
+<h3 style="color:#1F4E79;margin-top:0;">תקציר מנהלים</h3>
+<p>${a.executiveSummary}</p>
+</div>
+` : ''}
+
+<table style="width:100%;border-collapse:collapse;margin:15px 0;">
+<tr>
+<td style="padding:12px;text-align:center;background:#e8f4fc;border:1px solid #b8d4e8;"><div style="font-size:16pt;font-weight:bold;color:#1F4E79">${a.annualCost || '-'}</div><div style="font-size:9pt;color:#666">עלות שנתית</div></td>
+<td style="padding:12px;text-align:center;background:#e8f4fc;border:1px solid #b8d4e8;"><div style="font-size:16pt;font-weight:bold;color:#1F4E79">${a.annualKm || '-'}</div><div style="font-size:9pt;color:#666">ק"מ שנתי</div></td>
+<td style="padding:12px;text-align:center;background:#e8f4fc;border:1px solid #b8d4e8;"><div style="font-size:16pt;font-weight:bold;color:#1F4E79">${a.fleetSize || '-'}</div><div style="font-size:9pt;color:#666">אוטובוסים</div></td>
+<td style="padding:12px;text-align:center;background:#e8f4fc;border:1px solid #b8d4e8;"><div style="font-size:16pt;font-weight:bold;color:#1F4E79">${a.fleetType || '-'}</div><div style="font-size:9pt;color:#666">סוג צי</div></td>
+<td style="padding:12px;text-align:center;background:#e8f4fc;border:1px solid #b8d4e8;"><div style="font-size:16pt;font-weight:bold;color:#1F4E79">${a.incentivePotential || '-'}</div><div style="font-size:9pt;color:#666">תמריצים</div></td>
+</tr>
+</table>
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סעיף 1 - כללי ותיאור הפרויקט</h2>
+<table style="width:100%;border-collapse:collapse;">
+<tr><td style="border:1px solid #ddd;padding:8px;width:30%"><strong>אזור שירות</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.serviceArea || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>מפעיל יוצא</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.outgoingOperator || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>תקופת הפעלה</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.operationPeriod || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>הרכבה מקומית</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.localAssembly || '-'}</td></tr>
+</table>
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">דגלים אדומים (סיכונים)</h2>
+${(a.redFlags || []).map(f => `
+<div style="background:#fff5f5;border-right:4px solid #dc3545;padding:10px;margin:8px 0;">
+<strong style="color:#c00">${f.title || ''}</strong> (${f.reference || ''}) - חומרה: ${f.severity || 'לא צוין'}<br/>
+${f.description || ''}
+${f.mitigation ? `<br/><span style="color:#155724"><strong>התמודדות:</strong> ${f.mitigation}</span>` : ''}
+</div>
+`).join('') || '<p>לא זוהו דגלים אדומים</p>'}
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">הזדמנויות</h2>
+${(a.opportunities || []).map(o => `
+<div style="background:#f0fff4;border-right:4px solid #28a745;padding:10px;margin:8px 0;">
+<strong style="color:#080">${o.title || ''}</strong> (${o.reference || ''})<br/>
+${o.description || ''}
+${o.potential ? `<br/><span style="color:#1e3a5f"><strong>פוטנציאל:</strong> ${o.potential}</span>` : ''}
+</div>
+`).join('') || '<p>לא זוהו הזדמנויות</p>'}
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סעיף 3 - טבלת ניקוד</h2>
+<table style="width:100%;border-collapse:collapse;">
+<tr><th style="background:#1F4E79;color:white;padding:10px;text-align:right;">קריטריון</th><th style="background:#1F4E79;color:white;padding:10px;width:80px;">נקודות</th><th style="background:#1F4E79;color:white;padding:10px;text-align:right;">הסבר</th></tr>
+${(a.scoringTable || []).map(s => `<tr><td style="border:1px solid #ddd;padding:8px;">${s.criterion || ''}</td><td style="border:1px solid #ddd;padding:8px;text-align:center;font-weight:bold;color:#1F4E79">${s.points || ''}</td><td style="border:1px solid #ddd;padding:8px;font-size:11px;">${s.description || '-'}</td></tr>`).join('')}
+</table>
+<p><strong>מנגנון הצעה כספית:</strong> ${a.financialBidMechanism || '-'}</p>
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סעיף 5 - ערבויות וקנסות</h2>
+<table style="width:100%;border-collapse:collapse;">
+<tr><td style="border:1px solid #ddd;padding:8px;width:30%"><strong>ערבות מכרז</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.guarantees?.tender || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>ערבות ביצוע</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.guarantees?.performance || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>סף הפרה יסודית</strong></td><td style="border:1px solid #ddd;padding:8px;color:#c00;font-weight:bold">${a.penalties?.breachThreshold || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>קנס אי ביצוע</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.penalties?.nonExecution || '-'}</td></tr>
+<tr><td style="border:1px solid #ddd;padding:8px;"><strong>קנסות נוספים</strong></td><td style="border:1px solid #ddd;padding:8px;">${a.penalties?.otherPenalties || '-'}</td></tr>
+</table>
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סעיף 7 - תמריצי נוסעים</h2>
+<table style="width:100%;border-collapse:collapse;">
+<tr><th style="background:#1F4E79;color:white;padding:10px;text-align:right;">מדרגה</th><th style="background:#1F4E79;color:white;padding:10px;">תמריץ לנוסע</th><th style="background:#1F4E79;color:white;padding:10px;text-align:right;">טווח</th></tr>
+${(a.passengerIncentives || []).map(i => `<tr><td style="border:1px solid #ddd;padding:8px;">${i.tier || ''}</td><td style="border:1px solid #ddd;padding:8px;text-align:center">${i.rate || ''} ₪</td><td style="border:1px solid #ddd;padding:8px;">${i.range || '-'}</td></tr>`).join('')}
+</table>
+<p><strong>פוטנציאל שנתי:</strong> ${a.incentivePotential || '-'}</p>
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סעיף 10 - נקודות פעולה מיידיות</h2>
+${(a.actionItems || []).map((x, i) => `<div style="background:#e8f4fc;padding:8px 12px;margin:6px 0;border-right:3px solid #1F4E79;"><strong>${i+1}.</strong> ${x}</div>`).join('') || '<p>לא הוגדרו</p>'}
+
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">שאלות הבהרה קריטיות</h2>
+${(a.clarificationQuestions || []).map((x, i) => `<div style="background:#fff8e1;padding:8px 12px;margin:6px 0;border-right:3px solid #ffc107;"><strong>${i+1}.</strong> ${x}</div>`).join('') || '<p>לא הוגדרו</p>'}
+
+${a.competitorAnalysis ? `
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">ניתוח תחרות</h2>
+<p>${a.competitorAnalysis}</p>
+` : ''}
+
+${a.strategicConsiderations ? `
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">שיקולים אסטרטגיים</h2>
+<p>${a.strategicConsiderations}</p>
+` : ''}
+
+${a.fullSummary ? `
+<h2 style="color:#1F4E79;border-right:4px solid #1F4E79;padding-right:10px;background:#f8f9fa;padding:8px 10px;">סיכום מלא</h2>
+<p>${a.fullSummary}</p>
+` : ''}
+`;
+        }
+        
+        function downloadWord(index) {
+            const a = analyses[index];
+            const content = generateWordContent(a);
+            
+            const html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+@page { size: A4; margin: 2cm; }
+body { font-family: Arial, sans-serif; direction: rtl; text-align: right; line-height: 1.6; }
+</style>
+</head>
+<body dir="rtl">
+${content}
+<div style="margin-top:30px;text-align:center;color:#888;font-size:9pt;border-top:1px solid #ddd;padding-top:15px;">
+מסמך זה הופק אוטומטית באמצעות כלי ניתוח מכרזי תחבורה | ${new Date().toLocaleDateString('he-IL')}
+</div>
+</body>
+</html>`;
+            
+            downloadFile(html, `תקציר_מכרז_${(a.tenderName || 'מכרז').replace(/[^א-תa-zA-Z0-9]/g, '_')}.doc`);
+        }
+        
+        function downloadCombinedWord() {
+            let content = '';
+            
+            // Comparison section
+            if (comparisonData) {
+                content += `
+<h1 style="color:#6f42c1;border-bottom:3px solid #6f42c1;padding-bottom:10px;">📊 השוואת מכרזים</h1>
+
+<div style="background:#f8f0ff;padding:15px;border-radius:8px;margin:15px 0;">
+<p>${comparisonData.comparisonSummary || ''}</p>
+</div>
+
+<table style="width:100%;border-collapse:collapse;margin:15px 0;">
+<tr>
+<th style="background:#6f42c1;color:white;padding:10px;text-align:right;">פרמטר</th>
+${analyses.map(a => `<th style="background:#6f42c1;color:white;padding:10px;text-align:right;">${a.tenderName || a.fileName}</th>`).join('')}
+</tr>
+${(comparisonData.comparisonTable || []).map(row => `
+<tr>
+<td style="border:1px solid #ddd;padding:8px;"><strong>${row.parameter}</strong></td>
+${(row.values || []).map(v => `<td style="border:1px solid #ddd;padding:8px;">${v}</td>`).join('')}
+</tr>
+`).join('')}
+</table>
+
+${comparisonData.bestChoice ? `
+<div style="background:#d4edda;border:2px solid #28a745;padding:20px;border-radius:8px;margin:20px 0;">
+<h2 style="color:#155724;margin-top:0;">🏆 המלצה: ${comparisonData.bestChoice}</h2>
+<p>${comparisonData.bestChoiceReason || ''}</p>
+</div>
+` : ''}
+
+${comparisonData.warnings?.length ? `
+<div style="background:#fff3cd;padding:15px;border-radius:8px;margin:15px 0;">
+<strong>⚠️ אזהרות:</strong>
+<ul>
+${comparisonData.warnings.map(w => `<li>${w}</li>`).join('')}
+</ul>
+</div>
+` : ''}
+
+${comparisonData.synergyOpportunities ? `<p><strong>הזדמנויות סינרגיה:</strong> ${comparisonData.synergyOpportunities}</p>` : ''}
+${comparisonData.resourceConsiderations ? `<p><strong>שיקולי משאבים:</strong> ${comparisonData.resourceConsiderations}</p>` : ''}
+`;
+            }
+            
+            // Individual tenders
+            for (const a of analyses) {
+                content += generateWordContent(a);
+            }
+            
+            const html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+@page { size: A4; margin: 2cm; }
+body { font-family: Arial, sans-serif; direction: rtl; text-align: right; line-height: 1.6; }
+</style>
+</head>
+<body dir="rtl">
+${content}
+<div style="margin-top:30px;text-align:center;color:#888;font-size:9pt;border-top:1px solid #ddd;padding-top:15px;">
+מסמך זה הופק אוטומטית באמצעות כלי ניתוח מכרזי תחבורה | ${new Date().toLocaleDateString('he-IL')}
+</div>
+</body>
+</html>`;
+            
+            downloadFile(html, `השוואת_מכרזים_${new Date().toLocaleDateString('he-IL').replace(/\//g, '-')}.doc`);
+        }
+        
+        function downloadFile(content, filename) {
+            const blob = new Blob(['\ufeff' + content], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
